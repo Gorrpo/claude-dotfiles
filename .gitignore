@@ -1,0 +1,41 @@
+# Arquivos sensíveis
+.env
+.env.local
+*.local.json
+credentials.json
+tokens.json
+
+# Cache de plugins
+plugins/cache/
+node_modules/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Temporários
+*.tmp
+*.log
+*.swp
+*~
+.temp/
+
+# Backups
+*.bak
+*.backup
+
+# OS específicos
+$RECYCLE.BIN/
+.AppleDouble
+.LSOverride
+
+# Excluir configurações sensíveis mas incluir templates
+!templates/
+!settings/hooks/
+
+# Node
+.npm
+package-lock.json
+yarn.lock
