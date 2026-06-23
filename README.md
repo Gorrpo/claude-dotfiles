@@ -59,6 +59,50 @@ Para fazer backup das configurações atuais:
 git submodule add <url-do-repo> .claude-config
 ```
 
+## 👥 Para Colaboradores
+
+Se você foi adicionado como colaborador, siga estes passos:
+
+### Primeira Vez
+```powershell
+# 1. Clonar o repositório
+git clone https://github.com/Gorrpo/claude-dotfiles.git
+cd claude-dotfiles
+
+# 2. Instalar configurações
+.\scripts\install.ps1
+
+# 3. Reiniciar o Claude Code
+```
+
+### Fluxo de Trabalho
+```powershell
+# Fazer suas alterações nos arquivos da sua configuração
+
+# 1. Sincronizar alterações de volta ao repositório
+.\scripts\sync.ps1
+
+# 2. Revisar mudanças
+git status
+git diff
+
+# 3. Fazer commit
+git add .
+git commit -m "Sync: atualizar [skills/settings/plugins]"
+
+# 4. Fazer push
+git push origin main
+
+# 5. Outros colaboradores puxam as atualizações
+git pull origin main
+.\scripts\install.ps1  # Reaplica as mudanças
+```
+
+### Dicas
+- Use `.\scripts\backup.ps1` antes de grandes mudanças
+- Prefixe commits com "Sync:" para sincronizações
+- Comunique mudanças importantes com outros colaboradores
+
 ## 🔐 Segurança
 
 - Nunca comite `.env`, senhas ou tokens pessoais
