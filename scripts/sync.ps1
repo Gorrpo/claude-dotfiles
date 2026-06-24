@@ -1,47 +1,61 @@
 # Script de Sincronização - Claude Dotfiles
-# Sincroniza alterações do diretório .claude para o repositório
+# Copia skills e plugins do .claude para o repositório (nunca sincroniza configurações pessoais)
 
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptPath
 $claudeDir = "$env:USERPROFILE\.claude"
 
-Write-Host "🔄 Sincronizando Claude Dotfiles..." -ForegroundColor Green
+Write-Host "Sincronizando Claude Dotfiles..." -ForegroundColor Green
 
 # Sincronizar Skills
-Write-Host "`n📚 Sincronizando Skills..." -ForegroundColor Cyan
-if (Test-Path "$claudeDir\skills") {
-    Get-ChildItem -Path "$claudeDir\skills" -Directory | ForEach-Object {
-        Copy-Item -Path $_.FullName -Destination "$repoRoot\skills\" -Recurse -Force
-        Write-Host "  ✓ $($_.Name) sincronizado"
+Write-Host "`nSincronizando Skills..." -ForegroundColor Cyan
+$skillsSource = "$claudeDir\skills"
+$skillsDest = "$repoRoot\skills"
+
+if (Test-Path $skillsSource) {
+    $skills = Get-ChildItem -Path $skillsSource -Directory
+    if ($skills.Count -eq 0) {
+        Write-Host "  Nenhuma skill encontrada localmente"
+    } else {
+        foreach ($skill in $skills) {
+            Copy-Item -Path $skill.FullName -Destination "$skillsDest\" -Recurse -Force
+            Write-Host "  OK: $($skill.Name)"
+        }
     }
 } else {
-    Write-Host "  ℹ️ Nenhuma skill customizada encontrada"
+    Write-Host "  Pasta de skills nao encontrada em $skillsSource"
 }
 
-# Sincronizar Configurações
-Write-Host "`n⚙️ Sincronizando Configurações..." -ForegroundColor Cyan
-if (Test-Path "$claudeDir\settings.json") {
-    Copy-Item -Path "$claudeDir\settings.json" -Destination "$repoRoot\settings\" -Force
-    Write-Host "  ✓ settings.json sincronizado"
-}
+# Sincronizar Plugins
+Write-Host "`nSincronizando Plugins..." -ForegroundColor Cyan
+$pluginsSource = "$claudeDir\plugins"
+$pluginsDest = "$repoRoot\plugins"
 
-if (Test-Path "$claudeDir\keybindings.json") {
-    Copy-Item -Path "$claudeDir\keybindings.json" -Destination "$repoRoot\settings\" -Force
-    Write-Host "  ✓ keybindings.json sincronizado"
-}
-
-# Sincronizar Hooks
-Write-Host "`n🔗 Sincronizando Hooks..." -ForegroundColor Cyan
-if (Test-Path "$claudeDir\hooks") {
-    Copy-Item -Path "$claudeDir\hooks\*" -Destination "$repoRoot\settings\hooks\" -Recurse -Force
-    Write-Host "  ✓ Hooks sincronizados"
+if (Test-Path $pluginsSource) {
+    $plugins = Get-ChildItem -Path $pluginsSource -Directory
+    if ($plugins.Count -eq 0) {
+        Write-Host "  Nenhum plugin encontrado localmente"
+    } else {
+        foreach ($plugin in $plugins) {
+            Copy-Item -Path $plugin.FullName -Destination "$pluginsDest\" -Recurse -Force
+            Write-Host "  OK: $($plugin.Name)"
+        }
+    }
 } else {
-    Write-Host "  ℹ️ Nenhum hook customizado encontrado"
+    Write-Host "  Pasta de plugins nao encontrada em $pluginsSource"
 }
 
-Write-Host "`n✅ Sincronização concluída!" -ForegroundColor Green
-Write-Host "`n📋 Próximas etapas:" -ForegroundColor Yellow
+# Lembrar que configurações pessoais não são sincronizadas
+Write-Host "`nNao sincronizado (configuracoes pessoais):" -ForegroundColor Yellow
+Write-Host "  settings.json"
+Write-Host "  keybindings.json"
+
+# Ver mudanças no git
+Write-Host "`nMudancas prontas para commit:" -ForegroundColor Cyan
+git -C $repoRoot status --short
+
+Write-Host "`nPara enviar ao GitHub:" -ForegroundColor Green
 Write-Host "  git add ."
-Write-Host "  git commit -m 'Sync: atualizar configurações'"
+Write-Host "  git commit -m ""Sync: atualizar skills e plugins"""
 Write-Host "  git push origin main"
 Write-Host ""
